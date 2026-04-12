@@ -5,6 +5,6 @@
 struct Player 
 {
     std::string id;
-    int score;
+    int elo = 0, mmr = 0;
     bool ready = false;
 };
