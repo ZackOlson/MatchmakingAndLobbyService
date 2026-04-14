@@ -5,6 +5,8 @@
 #include <mutex>
 #include "Lobby.h"
 
+// LobbyManager creates and stores lobbies, and currently is temp holding the matchmaking until that is moved
+
 class LobbyManager
 {
 public:

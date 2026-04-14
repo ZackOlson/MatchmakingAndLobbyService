@@ -8,6 +8,8 @@
 
 using boost::asio::ip::tcp;
 
+// A session is a connected client. It holds socket, player info, and handles read/write
+
 class Session : public std::enable_shared_from_this<Session>
 {
 public:

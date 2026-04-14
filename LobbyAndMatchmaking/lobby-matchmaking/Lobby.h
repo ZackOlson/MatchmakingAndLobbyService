@@ -4,6 +4,8 @@
 #include <algorithm>
 #include "Player.h"
 
+// A lobby holds a group of sessions
+
 class Lobby
 {
 public:
