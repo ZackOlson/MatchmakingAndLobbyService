@@ -5,6 +5,7 @@
 #include <string>
 #include "Player.h"
 #include "Lobby.h"
+#include "LobbyManager.cpp"
 
 using boost::asio::ip::tcp;
 

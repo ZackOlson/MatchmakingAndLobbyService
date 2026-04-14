@@ -93,9 +93,11 @@ public:
         , m_acceptor(io_context, tcp::endpoint(tcp::v4(), port))
         , m_port(port)
     {
-        tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), port));
+        /*tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), port));
         acceptor.set_option(tcp::acceptor::reuse_address(true));
-        acceptor.listen(128);
+        acceptor.listen(128);*/
+
+        m_acceptor.set_option(tcp::acceptor::reuse_address(true));
         std::cout << "[Server] TCP Chat Server starting on port " << port << "...\n";
     }
 
@@ -106,7 +108,27 @@ public:
 
     void start() {
         m_acceptor.set_option(tcp::acceptor::reuse_address(true));
+        accept_connection();
+    }
 
+    void accept_connection()
+    {
+        m_acceptor.async_accept(
+            [this](boost::system::error_code ec, tcp::socket socket)
+            {
+                if (!ec)
+                {
+                    std::cout << "[Server] Client connected\n";
+
+                    // Get setup with session
+
+                    // temporary so it doesn't break
+                    socket.close(); 
+
+                }
+
+                accept_connection();
+            });
     }
 
     uint16_t port() const { return m_acceptor.local_endpoint().port(); }
