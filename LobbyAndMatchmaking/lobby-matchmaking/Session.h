@@ -8,9 +8,6 @@
 
 using boost::asio::ip::tcp;
 
-extern std::unordered_map<std::string, std::shared_ptr<Session>> g_sessions;
-extern std::mutex g_sessions_mutex;
-
 class Session : public std::enable_shared_from_this<Session>
 {
 public:
@@ -25,8 +22,8 @@ public:
         std::cout << "[Session] Client connected\n";
 
         m_player.id = "Player_" + std::to_string(reinterpret_cast<uintptr_t>(this));
-        std::lock_guard<std::mutex> lock(g_sessions_mutex);
-        g_sessions[m_player.id] = shared_from_this();
+        //std::lock_guard<std::mutex> lock(g_sessions_mutex);
+        //g_sessions[m_player.id] = shared_from_this();
 
         do_read();
     }

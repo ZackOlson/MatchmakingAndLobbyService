@@ -20,5 +20,7 @@ private:
 
     std::unordered_map<std::string, std::shared_ptr<Lobby>> m_lobbies;
     std::vector<std::shared_ptr<Session>> m_queue;
+    std::unordered_map<std::string, std::shared_ptr<Session>> g_sessions;
+    std::mutex g_sessions_mutex;
     std::mutex m_mutex;
 };
