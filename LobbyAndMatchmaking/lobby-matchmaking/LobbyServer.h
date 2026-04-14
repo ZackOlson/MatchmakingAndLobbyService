@@ -8,6 +8,8 @@
 #include <mutex>
 #include <thread>
 
+#include "Session.h"
+
 using boost::asio::ip::tcp;
 
 constexpr size_t MAX_MESSAGE_LENGTH = 1200;
@@ -113,22 +115,32 @@ public:
 
     void accept_connection()
     {
-        m_acceptor.async_accept(
-            [this](boost::system::error_code ec, tcp::socket socket)
-            {
-                if (!ec)
-                {
-                    std::cout << "[Server] Client connected\n";
+        // m_acceptor.async_accept(
+        //     [this](boost::system::error_code ec, tcp::socket socket)
+        //     {
+        //         if (!ec)
+        //         {
+        //             std::cout << "[Server] Client connected\n";
+        //
+        //             // Get setup with session
+        //
+        //             // temporary so it doesn't break
+        //             socket.close();
+        //
+        //         }
+        //
+        //         accept_connection();
+        //     });
 
-                    // Get setup with session
+        // simple accept connection from gameguild
+        while (true) {
+            tcp::socket socket(m_io_context);
 
-                    // temporary so it doesn't break
-                    socket.close(); 
+            m_acceptor.accept(socket);
 
-                }
-
-                accept_connection();
-            });
+            auto session = std::make_shared<Session>(std::move(socket));
+            session->start();
+        }
     }
 
     uint16_t port() const { return m_acceptor.local_endpoint().port(); }

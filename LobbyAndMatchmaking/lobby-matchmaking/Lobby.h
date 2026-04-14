@@ -9,16 +9,41 @@
 class Lobby
 {
 public:
-    explicit Lobby(std::string id);
+    Lobby(std::string id)
+    : m_id(std::move(id)) {
+        m_players.reserve(MAX_PLAYERS);
+    }
 
-    void add_player(const Player& player);
-    void remove_player(const std::string& playerId);
+    void add_player(const Player& player) {
+        if (!is_full())
+            m_players.push_back(player);
+    }
 
-    bool is_full() const;
-    bool all_ready() const;
+    void remove_player(const std::string& playerId) {
+        m_players.erase(
+            std::remove_if(m_players.begin(), m_players.end(),
+                [&](const Player& p) { return p.id == playerId; }),
+            m_players.end()
+        );
+    }
 
-    const std::vector<Player>& players() const;
-    const std::string& id() const;
+    bool is_full() const {
+        return m_players.size() >= MAX_PLAYERS;
+    }
+
+    bool all_ready() const {
+        for (const auto& p : m_players)
+            if (!p.ready) return false;
+        return !m_players.empty();
+    }
+
+    const std::vector<Player>& players() const {
+        return m_players;
+    }
+
+    const std::string& id() const {
+        return m_id;
+    }
 
 private:
     static constexpr size_t MAX_PLAYERS = 4;

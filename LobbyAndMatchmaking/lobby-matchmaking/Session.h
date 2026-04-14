@@ -98,7 +98,8 @@ private:
 
 public:
     // TEMP
-    static std::function<std::shared_ptr<Session>(const std::string&)> m_session_lookup;
+    //static std::function<std::shared_ptr<Session>(const std::string&)> m_session_lookup;
+    std::function<std::shared_ptr<Session>(const std::string&)> m_session_lookup;
 
 private:
     tcp::socket m_socket;
