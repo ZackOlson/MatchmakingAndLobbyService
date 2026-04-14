@@ -1,8 +1,5 @@
 #include "LobbyManager.h"
 
-static std::unordered_map<std::string, std::shared_ptr<Session>> g_sessions;
-static std::mutex g_sessions_mutex;
-
 std::string LobbyManager::generate_lobby_id() {
     static int counter = 0;
     return "lobby_" + std::to_string(++counter);

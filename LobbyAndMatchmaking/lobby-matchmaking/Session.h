@@ -5,9 +5,11 @@
 #include <string>
 #include "Player.h"
 #include "Lobby.h"
-#include "LobbyManager.cpp"
 
 using boost::asio::ip::tcp;
+
+extern std::unordered_map<std::string, std::shared_ptr<Session>> g_sessions;
+extern std::mutex g_sessions_mutex;
 
 class Session : public std::enable_shared_from_this<Session>
 {

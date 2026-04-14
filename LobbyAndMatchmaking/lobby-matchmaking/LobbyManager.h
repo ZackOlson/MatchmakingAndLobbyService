@@ -19,5 +19,6 @@ private:
     std::string generate_lobby_id();
 
     std::unordered_map<std::string, std::shared_ptr<Lobby>> m_lobbies;
+    std::vector<std::shared_ptr<Session>> m_queue;
     std::mutex m_mutex;
 };
