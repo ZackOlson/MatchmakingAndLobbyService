@@ -9,36 +9,118 @@
 
 class Matchmaking {
 public:
+    void initTemp()
+    {
+        temp_lobbies.clear();
+        temp_lobbies["0-400"] = std::vector<std::shared_ptr<Session>>();
+        temp_lobbies["401-800"] = std::vector<std::shared_ptr<Session>>();
+        temp_lobbies["801-1200"] = std::vector<std::shared_ptr<Session>>();
+        temp_lobbies["1201+"] = std::vector<std::shared_ptr<Session>>();
+    }
+
     void add_to_queue(const std::shared_ptr<Session> &session)
     {
         std::lock_guard<std::mutex> lock(m_mutex);
 
-        m_queue.push_back(session);
+        if (session->player().elo <= 400) {
+            std::vector<std::shared_ptr<Session>> tmp = temp_lobbies["0-400"];
+            tmp.push_back(session);
 
-        // TEMP MATCHMAKING LOGIC: This groups players into lobbies of 4 automatically. PLEASE REPLACE WHEN MAKING MATCHMAKING
-        if (m_queue.size() >= 4)
-        {
-            std::vector<Player> players;
-            std::vector<std::shared_ptr<Session>> sessions;
+            // if we have enough players for a lobby
+            if (tmp.size() >= 4) {
+                std::vector<Player> players;
+                for (int i = 0; i < 4; i++) {
+                    players.push_back(tmp[i]->player());
+                }
 
-            for (int i = 0; i < 4; ++i)
-            {
-                sessions.push_back(m_queue[i]);
-                players.push_back(m_queue[i]->player());
+                auto lobby = create_lobby(players);
+
+                std::cout << "[LobbyManager] Created lobby: " << lobby->id() << "\n";
+
+                // Assign sessions to lobby
+                for (int i = 0; i < 4; i++) {
+                    std::shared_ptr<Session> s = tmp[0];
+                    tmp.erase(tmp.begin());
+                    s->set_lobby(lobby);
+                    s->send_message("[Server] Joined lobby: " + lobby->id());
+                }
             }
+            temp_lobbies["0-400"] = tmp;
+        }
+        else if (session->player().elo <= 800) {
+            std::vector<std::shared_ptr<Session>> tmp = temp_lobbies["401-800"];
+            tmp.push_back(session);
 
-            m_queue.erase(m_queue.begin(), m_queue.begin() + 4);
+            // if we have enough players for a lobby
+            if (tmp.size() >= 4) {
+                std::vector<Player> players;
+                for (int i = 0; i < 4; i++) {
+                    players.push_back(tmp[i]->player());
+                }
 
-            auto lobby = create_lobby(players);
+                auto lobby = create_lobby(players);
 
-            std::cout << "[LobbyManager] Created lobby: " << lobby->id() << "\n";
+                std::cout << "[LobbyManager] Created lobby: " << lobby->id() << "\n";
 
-            // Assign sessions to lobby
-            for (auto& s : sessions)
-            {
-                s->set_lobby(lobby);
-                s->send_message("[Server] Joined lobby: " + lobby->id());
+                // Assign sessions to lobby
+                for (int i = 0; i < 4; i++) {
+                    std::shared_ptr<Session> s = tmp[0];
+                    tmp.erase(tmp.begin());
+                    s->set_lobby(lobby);
+                    s->send_message("[Server] Joined lobby: " + lobby->id());
+                }
             }
+            temp_lobbies["401-800"] = tmp;
+        }
+        else if (session->player().elo <= 1200) {
+            std::vector<std::shared_ptr<Session>> tmp = temp_lobbies["801-1200"];
+            tmp.push_back(session);
+
+            // if we have enough players for a lobby
+            if (tmp.size() >= 4) {
+                std::vector<Player> players;
+                for (int i = 0; i < 4; i++) {
+                    players.push_back(tmp[i]->player());
+                }
+
+                auto lobby = create_lobby(players);
+
+                std::cout << "[LobbyManager] Created lobby: " << lobby->id() << "\n";
+
+                // Assign sessions to lobby
+                for (int i = 0; i < 4; i++) {
+                    std::shared_ptr<Session> s = tmp[0];
+                    tmp.erase(tmp.begin());
+                    s->set_lobby(lobby);
+                    s->send_message("[Server] Joined lobby: " + lobby->id());
+                }
+            }
+            temp_lobbies["801-1200"] = tmp;
+        }
+        else {
+            std::vector<std::shared_ptr<Session>> tmp = temp_lobbies["1201+"];
+            tmp.push_back(session);
+
+            // if we have enough players for a lobby
+            if (tmp.size() >= 4) {
+                std::vector<Player> players;
+                for (int i = 0; i < 4; i++) {
+                    players.push_back(tmp[i]->player());
+                }
+
+                auto lobby = create_lobby(players);
+
+                std::cout << "[LobbyManager] Created lobby: " << lobby->id() << "\n";
+
+                // Assign sessions to lobby
+                for (int i = 0; i < 4; i++) {
+                    std::shared_ptr<Session> s = tmp[0];
+                    tmp.erase(tmp.begin());
+                    s->set_lobby(lobby);
+                    s->send_message("[Server] Joined lobby: " + lobby->id());
+                }
+            }
+            temp_lobbies["1201+"] = tmp;
         }
     }
 
@@ -73,7 +155,7 @@ private:
         return "lobby_" + std::to_string(++counter);
     }
 
+    std::unordered_map<std::string, std::vector<std::shared_ptr<Session>>> temp_lobbies;
     std::unordered_map<std::string, std::shared_ptr<Lobby>> m_lobbies;
-    std::vector<std::shared_ptr<Session>> m_queue;
     std::mutex m_mutex;
 };
