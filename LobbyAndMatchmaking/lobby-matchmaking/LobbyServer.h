@@ -9,6 +9,7 @@
 #include <thread>
 
 #include "Session.h"
+#include "Matchmaking.h"
 
 using boost::asio::ip::tcp;
 
@@ -109,6 +110,7 @@ public:
     }
 
     void start() {
+        m_matchmaking.start();
         m_acceptor.set_option(tcp::acceptor::reuse_address(true));
         accept_connection();
     }
@@ -137,9 +139,12 @@ public:
             tcp::socket socket(m_io_context);
 
             m_acceptor.accept(socket);
+            std::cout << "Client connected: " << socket.remote_endpoint() << std::endl;
 
             auto session = std::make_shared<Session>(std::move(socket));
             session->start();
+
+            m_matchmaking.add_to_queue(session);
         }
     }
 
@@ -152,6 +157,7 @@ private:
     tcp::acceptor m_acceptor;
     uint16_t m_port;
     UserRegistry m_registry;
+    Matchmaking m_matchmaking;
 };
 
 inline int run_chat_server(uint16_t port) {

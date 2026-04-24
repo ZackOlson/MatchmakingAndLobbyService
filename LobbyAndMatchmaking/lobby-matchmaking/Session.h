@@ -3,6 +3,7 @@
 #include <memory>
 #include <iostream>
 #include <string>
+#include <random>
 #include "Player.h"
 #include "Lobby.h"
 
@@ -21,9 +22,13 @@ public:
 
     void start()
     {
-        std::cout << "[Session] Client connected\n";
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> distrib(100, 1400);
+        m_player.elo = distrib(gen);
 
         m_player.id = "Player_" + std::to_string(reinterpret_cast<uintptr_t>(this));
+        std::cout << "[Session] " << m_player.id << " connected. Elo: " << m_player.elo << std::endl;
         //std::lock_guard<std::mutex> lock(g_sessions_mutex);
         //g_sessions[m_player.id] = shared_from_this();
 

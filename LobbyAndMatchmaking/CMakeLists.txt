@@ -17,8 +17,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # include external libs
-#message("Git cloning doctest...")
-#CPMAddPackage("gh:doctest/doctest@2.4.12")
+message("Git cloning doctest...")
+CPMAddPackage("gh:doctest/doctest@2.4.12")
 
 # include formating
 message("Git clonning Format...")
@@ -36,6 +36,6 @@ CPMAddPackage(
 )
 
 # Enable testing
-#enable_testing()
+enable_testing()
 
 add_subdirectory(lobby-matchmaking)

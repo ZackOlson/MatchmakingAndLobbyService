@@ -25,3 +25,22 @@ endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
     target_compile_options(lobby-matchmaking-client PRIVATE -Wall -Wextra -Wpedantic)
 endif()
+
+# tests
+add_executable(tests tests.cpp)
+target_compile_features(tests PRIVATE cxx_std_23)
+target_link_libraries(tests PRIVATE Boost::asio doctest::doctest)
+if(WIN32)
+    target_link_libraries(tests PRIVATE ws2_32)
+endif()
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
+    target_compile_options(tests PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
+# Register with CTest
+include(CTest)
+add_test(NAME tests
+        COMMAND tests
+        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+)

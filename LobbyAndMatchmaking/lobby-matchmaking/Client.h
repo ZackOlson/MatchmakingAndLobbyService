@@ -78,7 +78,6 @@ inline int run_chat_client(const std::string& host, uint16_t port) {
 
         std::cout << "[Client] Connected!\n";
 
-
         client.run();
 
         return 0;
