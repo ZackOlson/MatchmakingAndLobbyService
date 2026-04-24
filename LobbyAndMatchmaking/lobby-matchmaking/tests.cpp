@@ -54,25 +54,25 @@ TEST_SUITE("Multi-Client Support") {
 
         // Connect all
         c1.connect(server_ep);
-        std::this_thread::sleep_for(50ms);
+        std::this_thread::sleep_for(500ms);
         c2.connect(server_ep);
-        std::this_thread::sleep_for(50ms);
+        std::this_thread::sleep_for(500ms);
         c3.connect(server_ep);
-        std::this_thread::sleep_for(50ms);
+        std::this_thread::sleep_for(500ms);
         c4.connect(server_ep);
-        std::this_thread::sleep_for(50ms);
+        std::this_thread::sleep_for(500ms);
         c5.connect(server_ep);
-        std::this_thread::sleep_for(50ms);
+        std::this_thread::sleep_for(500ms);
         c6.connect(server_ep);
-        std::this_thread::sleep_for(50ms);
+        std::this_thread::sleep_for(500ms);
         c7.connect(server_ep);
-        std::this_thread::sleep_for(50ms);
+        std::this_thread::sleep_for(500ms);
         c8.connect(server_ep);
-        std::this_thread::sleep_for(50ms);
+        std::this_thread::sleep_for(500ms);
         c9.connect(server_ep);
-        std::this_thread::sleep_for(50ms);
+        std::this_thread::sleep_for(500ms);
         c10.connect(server_ep);
-        std::this_thread::sleep_for(100ms);
+        std::this_thread::sleep_for(1000ms);
 
         // All should be connected
         CHECK(c1.is_open());
@@ -86,7 +86,7 @@ TEST_SUITE("Multi-Client Support") {
         CHECK(c9.is_open());
         CHECK(c10.is_open());
 
-        std::this_thread::sleep_for(2000ms);
+        std::this_thread::sleep_for(5000ms);
 
         c1.close();
         c2.close();

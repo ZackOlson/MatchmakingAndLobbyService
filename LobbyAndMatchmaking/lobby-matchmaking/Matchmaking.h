@@ -30,6 +30,16 @@ public:
             if (tmp.size() >= 4) {
                 assign_lobby(tmp);
             }
+            else if (tmp.size() == 3) {
+                // if front player has been waiting 1+ minutes, take front player from next group
+                if (tmp.front()->get_connection_duration().count() >= 60) {
+                    if (temp_lobbies["401-800"].size() > 0) {
+                        tmp.push(temp_lobbies["401-800"].front());
+                        temp_lobbies["401-800"].pop();
+                        assign_lobby(tmp);
+                    }
+                }
+            }
             temp_lobbies["0-400"] = tmp;
         }
         else if (session->player().elo <= 800) {
@@ -39,6 +49,22 @@ public:
             // if we have enough players for a lobby
             if (tmp.size() >= 4) {
                 assign_lobby(tmp);
+            }
+            else if (tmp.size() == 3) {
+                // if front player has been waiting 1+ minutes, take front player from next group
+                if (tmp.front()->get_connection_duration().count() >= 60) {
+                    // search low first
+                    if (temp_lobbies["0-400"].size() > 0) {
+                        tmp.push(temp_lobbies["0-400"].front());
+                        temp_lobbies["0-400"].pop();
+                        assign_lobby(tmp);
+                    }
+                    else if (temp_lobbies["801-1200"].size() > 0) {
+                        tmp.push(temp_lobbies["801-1200"].front());
+                        temp_lobbies["801-1200"].pop();
+                        assign_lobby(tmp);
+                    }
+                }
             }
             temp_lobbies["401-800"] = tmp;
         }
@@ -50,6 +76,22 @@ public:
             if (tmp.size() >= 4) {
                 assign_lobby(tmp);
             }
+            else if (tmp.size() == 3) {
+                // if front player has been waiting 1+ minutes, take front player from next group
+                if (tmp.front()->get_connection_duration().count() >= 60) {
+                    // search low first
+                    if (temp_lobbies["401-800"].size() > 0) {
+                        tmp.push(temp_lobbies["401-800"].front());
+                        temp_lobbies["401-800"].pop();
+                        assign_lobby(tmp);
+                    }
+                    else if (temp_lobbies["1201+"].size() > 0) {
+                        tmp.push(temp_lobbies["1201+"].front());
+                        temp_lobbies["1201+"].pop();
+                        assign_lobby(tmp);
+                    }
+                }
+            }
             temp_lobbies["801-1200"] = tmp;
         }
         else {
@@ -59,6 +101,16 @@ public:
             // if we have enough players for a lobby
             if (tmp.size() >= 4) {
                 assign_lobby(tmp);
+            }
+            else if (tmp.size() == 3) {
+                // if front player has been waiting 1+ minutes, take front player from next group
+                if (tmp.front()->get_connection_duration().count() >= 60) {
+                    if (temp_lobbies["801-1200"].size() > 0) {
+                        tmp.push(temp_lobbies["801-1200"].front());
+                        temp_lobbies["801-1200"].pop();
+                        assign_lobby(tmp);
+                    }
+                }
             }
             temp_lobbies["1201+"] = tmp;
         }

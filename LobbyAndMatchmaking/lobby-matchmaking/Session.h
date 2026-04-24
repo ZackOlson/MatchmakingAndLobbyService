@@ -22,6 +22,8 @@ public:
 
     void start()
     {
+        m_connection_start_time = std::chrono::steady_clock::now();
+
         std::random_device rd;
         std::mt19937 gen(rd());
         std::uniform_int_distribution<> distrib(100, 1400);
@@ -51,6 +53,10 @@ public:
     void set_lobby(std::shared_ptr<Lobby> lobby)
     {
         m_lobby = lobby;
+    }
+
+    std::chrono::seconds get_connection_duration() const {
+        return std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - m_connection_start_time);
     }
 
 private:
@@ -110,6 +116,7 @@ private:
     tcp::socket m_socket;
     boost::asio::streambuf m_buffer;
     Player m_player;
+    std::chrono::steady_clock::time_point m_connection_start_time;
 
     std::shared_ptr<Lobby> m_lobby;
 };
