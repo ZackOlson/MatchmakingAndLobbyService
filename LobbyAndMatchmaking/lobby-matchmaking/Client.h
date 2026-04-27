@@ -42,6 +42,44 @@ public:
             return;
         }
         m_running = true;
+
+        // read
+        std::thread([this]() {
+            while (m_running && m_socket.is_open()) {
+                boost::asio::streambuf buffer;
+                boost::system::error_code ec;
+
+                boost::asio::read_until(
+                    m_socket,
+                    buffer,
+                    '\n',
+                    ec
+                );
+
+                if (ec) break;
+
+                std::istream is(&buffer);
+                std::string msg;
+                std::getline(is, msg);
+
+                std::cout << msg << std::endl;
+            }
+            }).detach();
+
+        // send
+        std::thread([this]() {
+            while (m_running && m_socket.is_open()) {
+                std::string input;
+                std::getline(std::cin, input);
+
+                if (!input.empty()) {
+                    boost::asio::write(
+                        m_socket,
+                        boost::asio::buffer(input + "\n")
+                    );
+                }
+            }
+            }).detach();
     }
 
     void disconnect() {
@@ -79,6 +117,10 @@ inline int run_chat_client(const std::string& host, uint16_t port) {
         std::cout << "[Client] Connected!\n";
 
         client.run();
+
+        while (client.is_connected()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
 
         return 0;
 

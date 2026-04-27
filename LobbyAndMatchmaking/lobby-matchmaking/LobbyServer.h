@@ -144,6 +144,20 @@ public:
             auto session = std::make_shared<Session>(std::move(socket));
             session->start();
 
+            std::lock_guard<std::mutex> lock(m_sessions_mutex);
+            m_sessions[session->player().id] = session;
+
+            session->m_session_lookup =
+                [this](const std::string& id) -> std::shared_ptr<Session>
+                {
+                    std::lock_guard<std::mutex> lock(m_sessions_mutex);
+
+                    auto it = m_sessions.find(id);
+                    if (it == m_sessions.end()) return nullptr;
+
+                    return it->second.lock();
+                };
+
             m_matchmaking.add_to_queue(session);
         }
     }
@@ -158,6 +172,9 @@ private:
     uint16_t m_port;
     UserRegistry m_registry;
     Matchmaking m_matchmaking;
+
+    std::unordered_map<std::string, std::weak_ptr<Session>> m_sessions;
+    std::mutex m_sessions_mutex;
 };
 
 inline int run_chat_server(uint16_t port) {
