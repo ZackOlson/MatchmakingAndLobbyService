@@ -7,6 +7,9 @@
 #include "Session.h"
 #include <mutex>
 #include <queue>
+#include <future>
+
+const int TIME_WAIT_CONNECT = 10;
 
 class Matchmaking {
 public:
@@ -23,97 +26,186 @@ public:
         std::lock_guard<std::mutex> lock(m_mutex);
 
         if (session->player().elo <= 400) {
-            std::queue<std::shared_ptr<Session>> tmp = temp_lobbies["0-400"];
-            tmp.push(session);
+            temp_lobbies["0-400"].push(session);
 
             // if we have enough players for a lobby
-            if (tmp.size() >= 4) {
-                assign_lobby(tmp);
-            }
-            else if (tmp.size() == 3) {
-                // if front player has been waiting 1+ minutes, take front player from next group
-                if (tmp.front()->get_connection_duration().count() >= 60) {
-                    if (temp_lobbies["401-800"].size() > 0) {
-                        tmp.push(temp_lobbies["401-800"].front());
-                        temp_lobbies["401-800"].pop();
-                        assign_lobby(tmp);
-                    }
-                }
-            }
-            temp_lobbies["0-400"] = tmp;
+            // if (tmp.size() >= 4) {
+            //     assign_lobby(tmp);
+            // }
+            // else if (tmp.size() == 3) {
+            //     // if front player has been waiting x amount of time, take front player from next group
+            //     if (tmp.front()->get_connection_duration().count() >= TIME_WAIT_CONNECT) {
+            //         if (temp_lobbies["401-800"].size() > 0) {
+            //             tmp.push(temp_lobbies["401-800"].front());
+            //             temp_lobbies["401-800"].pop();
+            //             assign_lobby(tmp);
+            //         }
+            //     }
+            // }
         }
         else if (session->player().elo <= 800) {
-            std::queue<std::shared_ptr<Session>> tmp = temp_lobbies["401-800"];
-            tmp.push(session);
+            temp_lobbies["401-800"].push(session);
 
             // if we have enough players for a lobby
-            if (tmp.size() >= 4) {
-                assign_lobby(tmp);
-            }
-            else if (tmp.size() == 3) {
-                // if front player has been waiting 1+ minutes, take front player from next group
-                if (tmp.front()->get_connection_duration().count() >= 60) {
-                    // search low first
-                    if (temp_lobbies["0-400"].size() > 0) {
-                        tmp.push(temp_lobbies["0-400"].front());
-                        temp_lobbies["0-400"].pop();
-                        assign_lobby(tmp);
-                    }
-                    else if (temp_lobbies["801-1200"].size() > 0) {
-                        tmp.push(temp_lobbies["801-1200"].front());
-                        temp_lobbies["801-1200"].pop();
-                        assign_lobby(tmp);
-                    }
-                }
-            }
-            temp_lobbies["401-800"] = tmp;
+            // if (tmp.size() >= 4) {
+            //     assign_lobby(tmp);
+            // }
+            // else if (tmp.size() == 3) {
+            //     if (tmp.front()->get_connection_duration().count() >= TIME_WAIT_CONNECT) {
+            //         // search low first
+            //         if (temp_lobbies["0-400"].size() > 0) {
+            //             tmp.push(temp_lobbies["0-400"].front());
+            //             temp_lobbies["0-400"].pop();
+            //             assign_lobby(tmp);
+            //         }
+            //         else if (temp_lobbies["801-1200"].size() > 0) {
+            //             tmp.push(temp_lobbies["801-1200"].front());
+            //             temp_lobbies["801-1200"].pop();
+            //             assign_lobby(tmp);
+            //         }
+            //     }
+            // }
         }
         else if (session->player().elo <= 1200) {
-            std::queue<std::shared_ptr<Session>> tmp = temp_lobbies["801-1200"];
-            tmp.push(session);
+            temp_lobbies["801-1200"].push(session);
 
             // if we have enough players for a lobby
-            if (tmp.size() >= 4) {
-                assign_lobby(tmp);
-            }
-            else if (tmp.size() == 3) {
-                // if front player has been waiting 1+ minutes, take front player from next group
-                if (tmp.front()->get_connection_duration().count() >= 60) {
-                    // search low first
-                    if (temp_lobbies["401-800"].size() > 0) {
-                        tmp.push(temp_lobbies["401-800"].front());
-                        temp_lobbies["401-800"].pop();
-                        assign_lobby(tmp);
-                    }
-                    else if (temp_lobbies["1201+"].size() > 0) {
-                        tmp.push(temp_lobbies["1201+"].front());
-                        temp_lobbies["1201+"].pop();
-                        assign_lobby(tmp);
-                    }
-                }
-            }
-            temp_lobbies["801-1200"] = tmp;
+            // if (tmp.size() >= 4) {
+            //     assign_lobby(tmp);
+            // }
+            // else if (tmp.size() == 3) {
+            //     if (tmp.front()->get_connection_duration().count() >= TIME_WAIT_CONNECT) {
+            //         // search low first
+            //         if (temp_lobbies["401-800"].size() > 0) {
+            //             tmp.push(temp_lobbies["401-800"].front());
+            //             temp_lobbies["401-800"].pop();
+            //             assign_lobby(tmp);
+            //         }
+            //         else if (temp_lobbies["1201+"].size() > 0) {
+            //             tmp.push(temp_lobbies["1201+"].front());
+            //             temp_lobbies["1201+"].pop();
+            //             assign_lobby(tmp);
+            //         }
+            //     }
+            // }
         }
         else {
-            std::queue<std::shared_ptr<Session>> tmp = temp_lobbies["1201+"];
-            tmp.push(session);
+            temp_lobbies["1201+"].push(session);
 
             // if we have enough players for a lobby
-            if (tmp.size() >= 4) {
-                assign_lobby(tmp);
-            }
-            else if (tmp.size() == 3) {
-                // if front player has been waiting 1+ minutes, take front player from next group
-                if (tmp.front()->get_connection_duration().count() >= 60) {
-                    if (temp_lobbies["801-1200"].size() > 0) {
-                        tmp.push(temp_lobbies["801-1200"].front());
-                        temp_lobbies["801-1200"].pop();
-                        assign_lobby(tmp);
+            // if (tmp.size() >= 4) {
+            //     assign_lobby(tmp);
+            // }
+            // else if (tmp.size() == 3) {
+            //     if (tmp.front()->get_connection_duration().count() >= TIME_WAIT_CONNECT) {
+            //         if (temp_lobbies["801-1200"].size() > 0) {
+            //             tmp.push(temp_lobbies["801-1200"].front());
+            //             temp_lobbies["801-1200"].pop();
+            //             assign_lobby(tmp);
+            //         }
+            //     }
+            // }
+        }
+    }
+
+    void check_queue() {
+        while (true) {
+            // only check if there's 4+ players waiting, else we can't match them
+            if (temp_lobbies["0-400"].size() + temp_lobbies["401-800"].size() +
+            temp_lobbies["801-1200"].size() + temp_lobbies["1201+"].size() >= 4) {
+
+                // if 4+ in a single bucket, form a lobby
+                for (std::pair<std::string, std::queue<std::shared_ptr<Session>>> bucket : temp_lobbies) {
+                    if (bucket.second.size() >= 4) {
+                        assign_lobby(bucket.second);
+                        for (unsigned int i = 0; i < 4; i++) {
+                            bucket.second.pop();
+                        }
                     }
                 }
+
+                std::cout << "extended matching...\n";
+                match_buckets();
             }
-            temp_lobbies["1201+"] = tmp;
+            std::this_thread::sleep_for(std::chrono::seconds(2));
         }
+    }
+
+    void match_buckets() {
+        // combine buckets 1 & 2
+        if (temp_lobbies["0-400"].size() + temp_lobbies["401-800"].size() >= 4) {
+            std::queue<std::shared_ptr<Session>> bucket =  temp_lobbies["0-400"];
+            for (unsigned int i = 0; i < temp_lobbies["0-400"].size(); i++) {
+                temp_lobbies["0-400"].pop();
+            }
+            for (unsigned int i = bucket.size(); i < 4; i++) {
+                bucket.push(temp_lobbies["401-800"].front());
+                temp_lobbies["401-800"].pop();
+            }
+            assign_lobby(bucket);
+        }
+
+        // combine buckets 2 & 3
+        if (temp_lobbies["401-800"].size() + temp_lobbies["801-1200"].size() >= 4) {
+            std::queue<std::shared_ptr<Session>> bucket =  temp_lobbies["401-800"];
+            for (unsigned int i = 0; i < temp_lobbies["401-800"].size(); i++) {
+                temp_lobbies["401-800"].pop();
+            }
+            for (unsigned int i = bucket.size(); i < 4; i++) {
+                bucket.push(temp_lobbies["801-1200"].front());
+                temp_lobbies["801-1200"].pop();
+            }
+            assign_lobby(bucket);
+        }
+
+        // combine buckets 3 & 4
+        if (temp_lobbies["801-1200"].size() + temp_lobbies["1201+"].size() >= 4) {
+            std::queue<std::shared_ptr<Session>> bucket =  temp_lobbies["801-1200"];
+            for (unsigned int i = 0; i < temp_lobbies["801-1200"].size(); i++) {
+                temp_lobbies["801-1200"].pop();
+            }
+            for (unsigned int i = bucket.size(); i < 4; i++) {
+                bucket.push(temp_lobbies["1201+"].front());
+                temp_lobbies["1201+"].pop();
+            }
+            assign_lobby(bucket);
+        }
+
+        // // combine buckets 1, 2, & 3
+        // if (temp_lobbies["0-400"].size() + temp_lobbies["401-800"].size() + temp_lobbies["801-1200"].size() >= 4) {
+        //     std::queue<std::shared_ptr<Session>> bucket =  temp_lobbies["0-400"];
+        //     for (unsigned int i = 0; i < temp_lobbies["0-400"].size(); i++) {
+        //         temp_lobbies["0-400"].pop();
+        //     }
+        //     for (unsigned int i = bucket.size(); i < temp_lobbies["401-800"].size(); i++) {
+        //         bucket.push(temp_lobbies["401-800"].front());
+        //         temp_lobbies["401-800"].pop();
+        //     }
+        //     for (unsigned int i = bucket.size(); i < 4; i++) {
+        //         bucket.push(temp_lobbies["801-1200"].front());
+        //         temp_lobbies["801-1200"].pop();
+        //     }
+        //     std::cout << "bucket: " << bucket.size() << "\n";
+        //     assign_lobby(bucket);
+        // }
+        //
+        // // combine buckets 2, 3, & 4
+        // if (temp_lobbies["401-800"].size() + temp_lobbies["801-1200"].size() + temp_lobbies["1201+"].size() >= 4) {
+        //     std::queue<std::shared_ptr<Session>> bucket =  temp_lobbies["401-800"];
+        //     for (unsigned int i = 0; i < temp_lobbies["401-800"].size(); i++) {
+        //         temp_lobbies["401-800"].pop();
+        //     }
+        //     for (unsigned int i = bucket.size(); i < temp_lobbies["801-1200"].size(); i++) {
+        //         bucket.push(temp_lobbies["801-1200"].front());
+        //         temp_lobbies["801-1200"].pop();
+        //     }
+        //     for (unsigned int i = bucket.size(); i < 4; i++) {
+        //         bucket.push(temp_lobbies["1201+"].front());
+        //         temp_lobbies["1201+"].pop();
+        //     }
+        //     std::cout << "bucket: " << bucket.size() << "\n";
+        //     assign_lobby(bucket);
+        // }
     }
 
     std::shared_ptr<Lobby> create_lobby(const std::vector<Player>& players) {
@@ -144,6 +236,8 @@ public:
             s->send_message("[Server] Joined lobby: " + lobby->id());
             tmp.pop();
         }
+        std::cout << "Elos: " << players[0].elo << ", " << players[1].elo << ", "
+        << players[2].elo << ", " << players[3].elo << std::endl;
     }
 
     std::shared_ptr<Lobby> get_lobby(const std::string& lobbyId) {

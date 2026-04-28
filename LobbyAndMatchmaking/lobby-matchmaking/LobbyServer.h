@@ -112,28 +112,12 @@ public:
     void start() {
         m_matchmaking.start();
         m_acceptor.set_option(tcp::acceptor::reuse_address(true));
+        std::jthread matcher([this]() { m_matchmaking.check_queue(); });
         accept_connection();
     }
 
     void accept_connection()
     {
-        // m_acceptor.async_accept(
-        //     [this](boost::system::error_code ec, tcp::socket socket)
-        //     {
-        //         if (!ec)
-        //         {
-        //             std::cout << "[Server] Client connected\n";
-        //
-        //             // Get setup with session
-        //
-        //             // temporary so it doesn't break
-        //             socket.close();
-        //
-        //         }
-        //
-        //         accept_connection();
-        //     });
-
         // simple accept connection from gameguild
         while (true) {
             tcp::socket socket(m_io_context);
@@ -157,7 +141,6 @@ public:
 
                     return it->second.lock();
                 };
-
             m_matchmaking.add_to_queue(session);
         }
     }
