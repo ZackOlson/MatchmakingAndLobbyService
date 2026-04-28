@@ -115,12 +115,9 @@ public:
             temp_lobbies["801-1200"].size() + temp_lobbies["1201+"].size() >= 4) {
 
                 // if 4+ in a single bucket, form a lobby
-                for (std::pair<std::string, std::queue<std::shared_ptr<Session>>> bucket : temp_lobbies) {
+                for (auto& bucket : temp_lobbies) {
                     if (bucket.second.size() >= 4) {
                         assign_lobby(bucket.second);
-                        for (unsigned int i = 0; i < 4; i++) {
-                            bucket.second.pop();
-                        }
                     }
                 }
 
